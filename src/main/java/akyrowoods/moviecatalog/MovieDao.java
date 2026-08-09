@@ -37,7 +37,6 @@ public class MovieDao {
 
     public int insertMovie(Movie movie) {
         String sql = "INSERT INTO movies (title, release_year, runtime, director, rating, description, format) " + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-
         try {
             connect();
             PreparedStatement statement = jdbcConnection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -51,21 +50,17 @@ public class MovieDao {
             statement.setString(7, movie.getFormat());
 
             int insertedRow = statement.executeUpdate();
-
             if (insertedRow > 0) {
                 ResultSet keyValue = statement.getGeneratedKeys();
                 if (keyValue.next()) {
-                    disconnect();
                     return keyValue.getInt(1);
                 }
-
             }
-
-
         } catch (Exception e) {
             System.out.println("Error occurred:" + e.getMessage());
+        } finally {
+            disconnect();
         }
-        disconnect();
         return -1;
     }
 
@@ -79,7 +74,11 @@ public class MovieDao {
             return statement.executeUpdate();
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            return 0;
+        } finally {
+            disconnect();
         }
-    return 0;
     }
+
+
 }
