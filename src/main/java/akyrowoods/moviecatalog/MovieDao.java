@@ -10,18 +10,18 @@ public class MovieDao {
     private Connection jdbcConnection;
 
     public MovieDao(String jdbcUrl, String username, String password) {
-    this.jdbcUrl = jdbcUrl;
-    this.username = username;
-    this.password = password;
+        this.jdbcUrl = jdbcUrl;
+        this.username = username;
+        this.password = password;
     }
 
     public void connect() {
-       try {
-           this.jdbcConnection = DriverManager.getConnection(jdbcUrl, username, password);
-           System.out.println("Connection Successful");
-       } catch (Exception e) {
-           System.out.println("Database access error or url is null " + e.getMessage());
-       }
+        try {
+            this.jdbcConnection = DriverManager.getConnection(jdbcUrl, username, password);
+            System.out.println("Connection Successful");
+        } catch (Exception e) {
+            System.out.println("Database access error or url is null " + e.getMessage());
+        }
     }
 
     public void disconnect() {
@@ -35,9 +35,8 @@ public class MovieDao {
         }
     }
 
-    public int insertMovie(Movie movie)  {
-        String sql = "INSERT INTO movies (title, release_year, runtime, director, rating, description, format) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    public int insertMovie(Movie movie) {
+        String sql = "INSERT INTO movies (title, release_year, runtime, director, rating, description, format) " + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try {
             connect();

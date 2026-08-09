@@ -1,19 +1,24 @@
 package akyrowoods.moviecatalog;
 
-import com.google.gson.Gson;
+import tools.jackson.databind.ObjectMapper;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class JsonToMovie {
-    private final Gson gson;
+    private final ObjectMapper objectMapper;
 
     public JsonToMovie() {
-        this.gson = new Gson();
+        this.objectMapper = new ObjectMapper();
     }
 
-    public Movie convertToMovie(String json) {
-        return gson.fromJson(json, Movie.class);
+    public Movie convertToMovie(String json)  {
+        try {
+            return  objectMapper.readValue(json, Movie.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     public List<String> convertGenresToList(Movie movieData) {
@@ -39,7 +44,7 @@ public class JsonToMovie {
     public Movie movieAssembler(String json, String movieFormat) {
         Movie movie = convertToMovie(json);
         List<String> genreList = convertGenresToList(movie);
-        movie.setGenre(genreList);
+        movie.setGenreList(genreList);
 
         Formats format = sanitizeFormat(movieFormat);
         movie.setFormat(format);

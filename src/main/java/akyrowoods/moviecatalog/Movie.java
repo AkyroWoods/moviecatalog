@@ -1,49 +1,39 @@
 package akyrowoods.moviecatalog;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public class Movie {
-
-    @SerializedName("Title")
+    @JsonProperty("Title")
     private String title; //user required
 
     private int movieId; //database generated
     //api call
-    @SerializedName("Year")
+    @JsonProperty("Year")
 
     private int releaseYear;
-    @SerializedName("Runtime")
+    @JsonProperty("Runtime")
 
     private int runtime;
-    @SerializedName("Director")
+    @JsonProperty("Director")
     private String director;
 
-    @SerializedName("Rated")
+    @JsonProperty("Rated")
     private String rating;
 
-    @SerializedName("Genre")
+    @JsonProperty("Genre")
     private String genre;
 
-    @SerializedName("Plot")
+    @JsonProperty("Plot")
     private String description;
 
     private Formats format;
 
+    public Movie() {
+
+    }
     public Movie (String title, Formats format) {
         this.title = title;
-        this.format = format;
-    }
-    public Movie (int movieId, String title, int releaseYear, int runTime, String director,
-                  String rating, String genre, String description, Formats format) {
-        this.movieId = movieId;
-        this.title = title;
-        this.releaseYear = releaseYear;
-        this.runtime = runTime;
-        this.director = director;
-        this.rating = rating;
-        this.genre = genre;
-        this.description = description;
         this.format = format;
     }
 
@@ -90,7 +80,8 @@ public class Movie {
     public String getGenre() {
         return genre;
     }
-    public void setGenre(List<String> genre) {
+    public void setGenre(String genre) {this.genre = genre;} //for deserialization
+    public void setGenreList(List<String> genre) {
         this.genre = genre.toString();
     }
 
