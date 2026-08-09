@@ -29,6 +29,7 @@ public class JsonToMovie {
         String sanitizedFormat = format.trim()
                 .replace("-", "_")
                 .replace(" ", "_")
+                .replace("4k", "UHD_4k")
                 .toUpperCase();
 
         return Formats.valueOf(sanitizedFormat);
