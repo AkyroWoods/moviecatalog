@@ -1,0 +1,37 @@
+package akyrowoods.moviecatalog;
+
+import java.sql.*;
+
+
+public class MovieDao {
+    private final String jdbcUrl;
+    private final String username;
+    private final String password;
+    private Connection jdbcConnection;
+
+    public MovieDao(String jdbcUrl, String username, String password) {
+    this.jdbcUrl = jdbcUrl;
+    this.username = username;
+    this.password = password;
+    }
+
+    public void connect() {
+       try {
+           this.jdbcConnection = DriverManager.getConnection(jdbcUrl, username, password);
+           System.out.println("Connection Successful");
+       } catch (Exception e) {
+           System.out.println("Database access error or url is null " + e.getMessage());
+       }
+    }
+
+    public void disconnect() {
+        try {
+            if (jdbcConnection != null && !jdbcConnection.isClosed()) {
+                jdbcConnection.close();
+                System.out.println("Connection Disconnected");
+            }
+        } catch (Exception e) {
+            System.out.println("Database access error: " + e.getMessage());
+        }
+    }
+}
