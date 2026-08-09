@@ -25,4 +25,25 @@ public class JsonToMovie {
         return genreList;
     }
 
+    public Formats sanitizeFormat(String format) {
+        String sanitizedFormat = format.trim()
+                .replace("-", "_")
+                .replace(" ", "_")
+                .toUpperCase();
+
+        return Formats.valueOf(sanitizedFormat);
+
+    }
+
+    public Movie movieAssembler(String json, String movieFormat) {
+        Movie movie = convertToMovie(json);
+        List<String> genreList = convertGenresToList(movie);
+        movie.setGenre(genreList);
+
+        Formats format = sanitizeFormat(movieFormat);
+        movie.setFormat(format);
+
+        return movie;
+    }
+
 }
