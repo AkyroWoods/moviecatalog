@@ -99,6 +99,7 @@ public class Movie {
         this.format = format;
     }
 
+
     @Override
     public String toString() {
         return "Movie{" +

@@ -55,6 +55,7 @@ public class MovieDao {
             if (insertedRow > 0) {
                 ResultSet keyValue = statement.getGeneratedKeys();
                 if (keyValue.next()) {
+                    disconnect();
                     return keyValue.getInt(1);
                 }
 
@@ -64,8 +65,21 @@ public class MovieDao {
         } catch (Exception e) {
             System.out.println("Error occurred:" + e.getMessage());
         }
+        disconnect();
         return -1;
     }
 
+    public int deleteMovie(Movie movie) {
+        String sql = "DELETE FROM movies WHERE movie_id=?";
 
+        try {
+            connect();
+            PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+            statement.setInt(1, movie.getMovieId());
+            return statement.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    return 0;
+    }
 }
