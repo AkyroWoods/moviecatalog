@@ -28,13 +28,14 @@ public class Movie {
     @SerializedName("Plot")
     private String description;
 
-    private String format;
+    private Formats format;
 
-    public Movie (String title) {
+    public Movie (String title, Formats format) {
         this.title = title;
+        this.format = format;
     }
     public Movie (int movieId, String title, int releaseYear, int runTime, String director,
-                  String rating, String genre, String description, String format) {
+                  String rating, String genre, String description, Formats format) {
         this.movieId = movieId;
         this.title = title;
         this.releaseYear = releaseYear;
@@ -101,9 +102,9 @@ public class Movie {
     }
 
     public String getFormat() {
-        return format;
+        return format.toString();
     }
-    public void setFormat(String format) {
+    public void setFormat(Formats format) {
         this.format = format;
     }
 
