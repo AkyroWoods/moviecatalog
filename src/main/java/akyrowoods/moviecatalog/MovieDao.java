@@ -64,36 +64,23 @@ public class MovieDao {
     }
 
     private void insertGenres(Movie movie) {
-        String insertGenre = "INSERT INTO genres (genre) VALUES (?) ON CONFLICT DO NOTHING";
-        String selectGenre = "SELECT genre_id FROM genres where genre=?";
+        String insertGenre = "INSERT INTO genres (genre) VALUES (?) ON CONFLICT (genre) DO UPDATE SET genre=EXCLUDED.genre RETURNING genre_id";
         String insertIntoMovie_GenresTable = "INSERT INTO movie_genres (movie_id, genre_id) VALUES (?,?)";
         connect();
 
-        int genreValue = 0;
-        try {
-            PreparedStatement statement = jdbcConnection.prepareStatement(insertGenre, Statement.RETURN_GENERATED_KEYS);
-            PreparedStatement select = jdbcConnection.prepareStatement(selectGenre);
-            PreparedStatement join = jdbcConnection.prepareStatement(insertIntoMovie_GenresTable);
 
+        try {
             for (String genres : movie.getGenreList()) {
-                select.setString(1, genres);
-                ResultSet genreId = select.executeQuery();
+                PreparedStatement statement = jdbcConnection.prepareStatement(insertGenre);
+                statement.setString(1, genres);
+                ResultSet genreId = statement.executeQuery();
+
+                int genreValue = 0;
                 if (genreId.next()) {
                     genreValue = genreId.getInt(1);
-
-                } else {
-                    statement.setString(1, genres);
-                    statement.executeUpdate();
-                    genreId = statement.getGeneratedKeys();
-                    if (genreId.next()) {
-                        genreValue = genreId.getInt(1);
-                    } else {
-                        select.setString(1, genres);
-                        genreId = select.executeQuery();
-                        genreId.next();
-                        genreValue = genreId.getInt(1);
-                    }
                 }
+
+                PreparedStatement join = jdbcConnection.prepareStatement(insertIntoMovie_GenresTable);
                 join.setInt(1, movie.getMovieId());
                 join.setInt(2, genreValue);
                 join.executeUpdate();
