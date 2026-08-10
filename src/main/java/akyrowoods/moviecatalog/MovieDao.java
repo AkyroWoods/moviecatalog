@@ -34,7 +34,7 @@ public class MovieDao {
         }
     }
 
-    public void insertMovie(Movie movie) {
+    public boolean insertMovie(Movie movie) {
         String sql = "INSERT INTO movies (title, release_year, runtime, director, rating, description, format) " + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
             connect();
@@ -56,8 +56,10 @@ public class MovieDao {
                 }
             }
             insertGenres(movie);
+            return insertedRow > 0;
         } catch (Exception e) {
             System.out.println("Error occurred:" + e.getMessage());
+            return false;
         } finally {
             disconnect();
         }
@@ -67,7 +69,6 @@ public class MovieDao {
         String insertGenre = "INSERT INTO genres (genre) VALUES (?) ON CONFLICT (genre) DO UPDATE SET genre=EXCLUDED.genre RETURNING genre_id";
         String insertIntoMovie_GenresTable = "INSERT INTO movie_genres (movie_id, genre_id) VALUES (?,?)";
         connect();
-
 
         try {
             for (String genres : movie.getGenreList()) {
@@ -93,17 +94,53 @@ public class MovieDao {
         }
     }
 
-    public int deleteMovie(Movie movie) {
+    public boolean updateMovie(Movie movie) {
+        String sql = "UPDATE movies SET title =?, release_year=?, runtime=?, director=?, rating=?, description=?, format=? " + "WHERE movie_id=?";
+        String deleteGenres = "DELETE FROM movie_genres where movie_id=?";
+
+        try {
+            connect();
+            PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+            PreparedStatement genres = jdbcConnection.prepareStatement(deleteGenres);
+
+            genres.setInt(1, movie.getMovieId());
+            genres.executeUpdate();
+
+            statement.setString(1, movie.getTitle());
+            statement.setInt(2, movie.getReleaseYear());
+            statement.setInt(3, movie.getRuntime());
+            statement.setString(4, movie.getDirector());
+            statement.setString(5, movie.getRating());
+            statement.setString(6, movie.getDescription());
+            statement.setString(7, movie.getFormat());
+            statement.setInt(8, movie.getMovieId());
+
+
+            boolean update =  statement.executeUpdate() > 0;
+
+            if(update) {
+                insertGenres(movie); //update genres
+            }
+
+            return update;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            disconnect();
+        }
+    }
+
+    public boolean deleteMovie(Movie movie) {
         String sql = "DELETE FROM movies WHERE movie_id=?";
 
         try {
             connect();
             PreparedStatement statement = jdbcConnection.prepareStatement(sql);
             statement.setInt(1, movie.getMovieId());
-            return statement.executeUpdate();
+            return statement.executeUpdate() > 0;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return 0;
+            return false;
         } finally {
             disconnect();
         }
