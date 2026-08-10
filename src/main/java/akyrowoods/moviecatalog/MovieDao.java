@@ -1,6 +1,8 @@
 package akyrowoods.moviecatalog;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MovieDao {
     private final String jdbcUrl;
@@ -65,10 +67,70 @@ public class MovieDao {
         }
     }
 
+    public List<Movie> listAllMovies() {
+        List<Movie> collection = new ArrayList<>();
+        String sql = "Select * from movies";
+        try {
+            connect();
+            Statement statement = jdbcConnection.createStatement();
+            ResultSet rs = statement.executeQuery(sql);
+
+            while (rs.next()) {
+                int movieId = rs.getInt("movie_id");
+                String title = rs.getString("title");
+                int releaseYear = rs.getInt("release_year");
+                int runTime = rs.getInt("runtime");
+                String director = rs.getString("director");
+                String rating =  rs.getString("rating");
+                String description = rs.getString("description");
+                Formats format = Formats.valueOf(rs.getString("format"));
+
+                Movie movie = new Movie();
+                movie.setMovieId(movieId);
+                movie.setTitle(title);
+                movie.setReleaseYear(releaseYear);
+                movie.setRuntime(runTime);
+                movie.setDirector(director);
+                movie.setRating(rating);
+                movie.setDescription(description);
+                movie.setFormat(format);
+                movie.setGenreList(gatherGenres(movie));
+                collection.add(movie);
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            disconnect();
+        }
+        return collection;
+    }
+
+    private List<String> gatherGenres(Movie movie) {
+        List<String> genres = new ArrayList<>();
+        String sql =  "select m.movie_id, g.genre from movie_genres mg" +
+                " inner join movies m  on m.movie_id = mg.movie_id " +
+                "inner join genres g on g.genre_id = mg.genre_id " +
+                "where m.movie_id = ?";
+
+        try {
+            connect();
+            PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+            statement.setInt(1, movie.getMovieId());
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+            genres.add(rs.getString("genre"));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return genres;
+    }
+
     private void insertGenres(Movie movie) {
         String insertGenre = "INSERT INTO genres (genre) VALUES (?) ON CONFLICT (genre) DO UPDATE SET genre=EXCLUDED.genre RETURNING genre_id";
         String insertIntoMovie_GenresTable = "INSERT INTO movie_genres (movie_id, genre_id) VALUES (?,?)";
-        connect();
 
         try {
             for (String genres : movie.getGenreList()) {
@@ -89,8 +151,6 @@ public class MovieDao {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-        } finally {
-            disconnect();
         }
     }
 
