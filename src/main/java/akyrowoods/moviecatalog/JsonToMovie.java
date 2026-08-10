@@ -18,15 +18,6 @@ public class JsonToMovie {
         }
     }
 
-//    public List<String> convertGenresToList(Movie movieData) {
-//        List<String> genreList = new ArrayList<>();
-//        String genres = movieData.getGenre();
-//        String[] separated = genres.split(",");
-//
-//        Collections.addAll(genreList, separated);
-//        return genreList;
-//    }
-
     public Formats sanitizeFormat(String format) {
         String sanitizedFormat = format.trim()
                 .replace("-", "_")
