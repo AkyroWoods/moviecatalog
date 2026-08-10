@@ -1,9 +1,6 @@
 package akyrowoods.moviecatalog;
 
 import tools.jackson.databind.ObjectMapper;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class JsonToMovie {
@@ -21,14 +18,14 @@ public class JsonToMovie {
         }
     }
 
-    public List<String> convertGenresToList(Movie movieData) {
-        List<String> genreList = new ArrayList<>();
-        String genres = movieData.getGenre();
-        String[] separated = genres.split(",");
-
-        Collections.addAll(genreList, separated);
-        return genreList;
-    }
+//    public List<String> convertGenresToList(Movie movieData) {
+//        List<String> genreList = new ArrayList<>();
+//        String genres = movieData.getGenre();
+//        String[] separated = genres.split(",");
+//
+//        Collections.addAll(genreList, separated);
+//        return genreList;
+//    }
 
     public Formats sanitizeFormat(String format) {
         String sanitizedFormat = format.trim()
@@ -43,12 +40,10 @@ public class JsonToMovie {
 
     public Movie movieAssembler(String json, String movieFormat) {
         Movie movie = convertToMovie(json);
-        List<String> genreList = convertGenresToList(movie);
-        movie.setGenreList(genreList);
-
+        List<String> genres = movie.buildGenreListFromCsv(movie.getGenreCsv());
+        movie.setGenreList(genres);
         Formats format = sanitizeFormat(movieFormat);
         movie.setFormat(format);
-
         return movie;
     }
 

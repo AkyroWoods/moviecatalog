@@ -1,6 +1,8 @@
 package akyrowoods.moviecatalog;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Arrays;
 import java.util.List;
 
 public class Movie {
@@ -22,8 +24,9 @@ public class Movie {
     private String rating;
 
     @JsonProperty("Genre")
-    private String genre;
+    private String genreCsv;
 
+    private List<String> genreList;
     @JsonProperty("Plot")
     private String description;
 
@@ -77,12 +80,23 @@ public class Movie {
         this.rating = rating;
     }
 
-    public String getGenre() {
-        return genre;
+    public String getGenreCsv() {
+        return genreCsv;
     }
-    public void setGenre(String genre) {this.genre = genre;} //for deserialization
-    public void setGenreList(List<String> genre) {
-        this.genre = genre.toString();
+
+    public void setGenreCsv(String genreCsv) {this.genreCsv = genreCsv;}
+
+    public List<String> buildGenreListFromCsv(String genreCsv) {
+        return (Arrays.stream(genreCsv.split(","))
+                .map(String::trim)
+                .toList());
+    }
+
+    public List<String> getGenreList() {
+        return genreList;
+    }
+    public void setGenreList(List<String> genres) {
+        this.genreList = genres;
     }
 
     public String getDescription() {
@@ -109,7 +123,7 @@ public class Movie {
                 ", runtime=" + runtime +
                 ", director='" + director + '\'' +
                 ", rating='" + rating + '\'' +
-                ", genre=" + genre +
+                ", genre=" + genreList +
                 ", description='" + description + '\'' +
                 ", format='" + format + '\'' +
                 '}';
