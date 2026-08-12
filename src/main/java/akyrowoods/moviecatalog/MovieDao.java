@@ -20,7 +20,6 @@ public class MovieDao {
         try {
             Class.forName("org.postgresql.Driver");
             this.jdbcConnection = DriverManager.getConnection(jdbcUrl, username, password);
-            System.out.println("Connection Successful");
         } catch (Exception e) {
             System.out.println("Database access error or url is null " + e.getMessage());
         }
@@ -30,7 +29,6 @@ public class MovieDao {
         try {
             if (jdbcConnection != null && !jdbcConnection.isClosed()) {
                 jdbcConnection.close();
-                System.out.println("Connection Disconnected");
             }
         } catch (Exception e) {
             System.out.println("Database access error: " + e.getMessage());
