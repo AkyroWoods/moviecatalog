@@ -28,6 +28,11 @@ public class JsonToMovie {
         return Formats.valueOf(sanitizedFormat);
 
     }
+    public String sanitizeMovieTitle(String title) {
+        String sanitizedFormat = title.trim()
+                .replace(" ", "+");
+        return title;
+    }
 
     public Movie movieAssembler(String json, String movieFormat) {
         Movie movie = convertToMovie(json);
