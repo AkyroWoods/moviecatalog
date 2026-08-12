@@ -32,6 +32,9 @@ public class Movie {
 
     private Formats format;
 
+    @JsonProperty("Poster")
+    private String posterUrl;
+
     public Movie() {
 
     }
@@ -106,13 +109,19 @@ public class Movie {
         this.description = description;
     }
 
-    public String getFormat() {
-        return format.toString();
+    public Formats getFormat() {
+        return format;
     }
     public void setFormat(Formats format) {
         this.format = format;
     }
 
+    public String getPosterUrl() {
+        return posterUrl;
+    }
+    public void setPosterUrl(String posterUrl) {
+        this.posterUrl = posterUrl;
+    }
 
     @Override
     public String toString() {
