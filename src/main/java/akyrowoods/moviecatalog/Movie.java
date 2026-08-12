@@ -132,9 +132,11 @@ public class Movie {
                 ", runtime=" + runtime +
                 ", director='" + director + '\'' +
                 ", rating='" + rating + '\'' +
-                ", genre=" + genreList +
+                ", genreCsv='" + genreCsv + '\'' +
+                ", genreList=" + genreList +
                 ", description='" + description + '\'' +
-                ", format='" + format + '\'' +
+                ", format=" + format +
+                ", posterUrl='" + posterUrl + '\'' +
                 '}';
     }
 }

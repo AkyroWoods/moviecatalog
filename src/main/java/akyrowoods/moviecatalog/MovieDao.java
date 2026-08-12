@@ -225,20 +225,21 @@ public class MovieDao {
             connect();
             PreparedStatement statement = jdbcConnection.prepareStatement(sql);
             statement.setString(1, title);
-            ResultSet resultSet = statement.executeQuery();
+            ResultSet rs = statement.executeQuery();
 
-            if (resultSet.next()) {
-                movie.setMovieId(resultSet.getInt(1));
-                movie.setTitle(resultSet.getString(2));
-                movie.setReleaseYear(resultSet.getInt(3));
-                movie.setRuntime(resultSet.getInt(5));
-                movie.setDirector(resultSet.getString(6));
-                movie.setRating(resultSet.getString(7));
-                movie.setDescription(resultSet.getString(8));
-                movie.setFormat(Formats.valueOf(resultSet.getString(9)));
+            if (rs.next()) {
+                 movie.setMovieId(rs.getInt("movie_id"));
+                 movie.setTitle(rs.getString("title"));
+                 movie.setReleaseYear(rs.getInt("release_year"));
+                 movie.setRuntime(rs.getInt("runtime"));
+                 movie.setDirector(rs.getString("director"));
+                 movie.setRating(rs.getString("rating"));
+                 movie.setDescription(rs.getString("description"));
+                 movie.setFormat(Formats.valueOf(rs.getString("format")));
+                 movie.setPosterUrl(rs.getString("poster_url"));
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         } finally {
             disconnect();
         }
@@ -253,18 +254,18 @@ public class MovieDao {
             connect();
             PreparedStatement statement = jdbcConnection.prepareStatement(sql);
             statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
+            ResultSet rs = statement.executeQuery();
 
-            if (resultSet.next()) {
-                movie.setMovieId(resultSet.getInt(1));
-                movie.setTitle(resultSet.getString(2));
-                movie.setReleaseYear(resultSet.getInt(3));
-                movie.setRuntime(resultSet.getInt(5));
-                movie.setDirector(resultSet.getString(6));
-                movie.setRating(resultSet.getString(7));
-                movie.setDescription(resultSet.getString(8));
-                movie.setFormat(Formats.valueOf(resultSet.getString(9)));
-                movie.setPosterUrl(resultSet.getString(10));
+            if (rs.next()) {
+                movie.setMovieId(rs.getInt("movie_id"));
+                movie.setTitle(rs.getString("title"));
+                movie.setReleaseYear(rs.getInt("release_year"));
+                movie.setRuntime(rs.getInt("runtime"));
+                movie.setDirector(rs.getString("director"));
+                movie.setRating(rs.getString("rating"));
+                movie.setDescription(rs.getString("description"));
+                movie.setFormat(Formats.valueOf(rs.getString("format")));
+                movie.setPosterUrl(rs.getString("poster_url"));
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
