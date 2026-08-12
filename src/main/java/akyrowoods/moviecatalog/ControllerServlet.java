@@ -87,11 +87,13 @@ public class ControllerServlet extends HttpServlet{
     private void insertMovie(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String title = request.getParameter("title").replace(" ", "+");
         String format = request.getParameter("format");
-        int releaseYear = Integer.parseInt(request.getParameter("releaseYear"));
+        int releaseYear = 0;
         Movie movie;
-        if (releaseYear > 0) {
+
+         try {
+            releaseYear = Integer.parseInt((request.getParameter("releaseYear")));
             movie = movieConverter.movieAssembler((api.fetchMovie(title, releaseYear)), format);
-        } else {
+         } catch (NumberFormatException e) {
             movie = movieConverter.movieAssembler(api.fetchMovie(title), format);
         }
         movieDao.insertMovie(movie);
