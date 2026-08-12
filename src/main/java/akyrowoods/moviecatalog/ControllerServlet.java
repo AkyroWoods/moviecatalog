@@ -87,8 +87,13 @@ public class ControllerServlet extends HttpServlet{
     private void insertMovie(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String title = request.getParameter("title").replace(" ", "+");
         String format = request.getParameter("format");
-        Movie movie = movieConverter.movieAssembler(api.fetchMovie(title), format);
-        System.out.println("Inserted movie: " + movie.getTitle());
+        int releaseYear = Integer.parseInt(request.getParameter("releaseYear"));
+        Movie movie;
+        if (releaseYear > 0) {
+            movie = movieConverter.movieAssembler((api.fetchMovie(title, releaseYear)), format);
+        } else {
+            movie = movieConverter.movieAssembler(api.fetchMovie(title), format);
+        }
         movieDao.insertMovie(movie);
         response.sendRedirect("list");
     }
