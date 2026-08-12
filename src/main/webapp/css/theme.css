@@ -217,3 +217,31 @@ h1, h2, h3 {
     border-radius: 6px;
     text-decoration: none;
 }
+
+.search-bar {
+    display: flex;
+    justify-content: center;
+    margin: 20px auto;
+    gap: 10px;
+}
+
+.search-input {
+    width: 300px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #2a2a2a;
+    color: var(--text);
+    font-size: 1em;
+}
+
+.search-btn {
+    padding: 10px 18px;
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+}
+

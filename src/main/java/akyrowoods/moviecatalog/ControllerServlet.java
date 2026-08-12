@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+import com.sun.net.httpserver.Request;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.RequestDispatcher;
@@ -15,7 +16,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet({"/new", "/insert", "/update", "/edit", "/delete", "/list", "/details"})
+@WebServlet({"/new", "/insert", "/update", "/edit", "/delete", "/list", "/details", "/search"})
 public class ControllerServlet extends HttpServlet{
     @Serial
     private static final long serialVersionUID = 1L;
@@ -47,11 +48,22 @@ public class ControllerServlet extends HttpServlet{
                 case"/update" -> updateMovie(request, response);
                 case"/edit" -> showEditForm(request, response);
                 case"/delete" -> deleteMovie(request,response);
+                case"/search" -> searchMovie(request,response);
                 default -> listAllMovies(request, response);
             }
         } catch (Exception e) {
             throw new ServletException(e);
         }
+    }
+
+    private void searchMovie(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String title = request.getParameter("title");
+        Movie movie = movieDao.getMovieByTitle(title);
+
+        request.setAttribute("movie", movie);
+        System.out.println(movie.getPosterUrl());
+        RequestDispatcher dispatcher = request.getRequestDispatcher("Search.jsp");
+        dispatcher.forward(request,response);
     }
 
     private void listAllMovies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -71,7 +83,6 @@ public class ControllerServlet extends HttpServlet{
     }
 
     public void showEditForm(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
-
         int movieId = Integer.parseInt(request.getParameter("movieId"));
         Movie movie = movieDao.getMovieById(movieId);
         List<String> allGenres = movieDao.listAllGenres();
@@ -87,8 +98,15 @@ public class ControllerServlet extends HttpServlet{
     private void insertMovie(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String title = request.getParameter("title").replace(" ", "+");
         String format = request.getParameter("format");
-        Movie movie = movieConverter.movieAssembler(api.fetchMovie(title), format);
-        System.out.println("Inserted movie: " + movie.getTitle());
+        int releaseYear = 0;
+        Movie movie;
+
+         try {
+            releaseYear = Integer.parseInt((request.getParameter("releaseYear")));
+            movie = movieConverter.movieAssembler((api.fetchMovie(title, releaseYear)), format);
+         } catch (NumberFormatException e) {
+            movie = movieConverter.movieAssembler(api.fetchMovie(title), format);
+        }
         movieDao.insertMovie(movie);
         response.sendRedirect("list");
     }

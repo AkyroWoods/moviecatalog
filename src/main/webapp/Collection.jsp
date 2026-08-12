@@ -3,13 +3,18 @@
 <head>
     <title>Movie Catalog</title>
 
-    <!-- Correct CSS link -->
     <link rel="stylesheet" href="<c:url value='/css/theme.css' />">
 </head>
 
 <body>
 
 <h1 style="text-align: center; margin-top: 20px;">Movie Catalog</h1>
+
+<form action="${pageContext.request.contextPath}/search" method="get" class="search-bar">
+    <input type="text" name="title" placeholder="Search for a movie..." class="search-input">
+    <button type="submit" class="search-btn">Search</button>
+</form>
+
 
 <div class="grid-catalog">
     <c:forEach var="m" items="${movies}">
