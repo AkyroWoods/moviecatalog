@@ -18,6 +18,7 @@ public class MovieDao {
 
     public void connect() {
         try {
+            Class.forName("org.postgresql.Driver");
             this.jdbcConnection = DriverManager.getConnection(jdbcUrl, username, password);
             System.out.println("Connection Successful");
         } catch (Exception e) {
@@ -37,7 +38,7 @@ public class MovieDao {
     }
 
     public boolean insertMovie(Movie movie) {
-        String sql = "INSERT INTO movies (title, release_year, runtime, director, rating, description, format) " + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO movies (title, release_year, runtime, director, rating, description, format, poster_url) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             connect();
             PreparedStatement statement = jdbcConnection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -48,7 +49,8 @@ public class MovieDao {
             statement.setString(4, movie.getDirector());
             statement.setString(5, movie.getRating());
             statement.setString(6, movie.getDescription());
-            statement.setString(7, movie.getFormat());
+            statement.setString(7, movie.getFormat().toString());
+            statement.setString(8, movie.getPosterUrl());
 
             int insertedRow = statement.executeUpdate();
             if (insertedRow > 0) {
@@ -84,6 +86,7 @@ public class MovieDao {
                 String rating =  rs.getString("rating");
                 String description = rs.getString("description");
                 Formats format = Formats.valueOf(rs.getString("format"));
+                String posterUrl = rs.getString("poster_url");
 
                 Movie movie = new Movie();
                 movie.setMovieId(movieId);
@@ -95,9 +98,9 @@ public class MovieDao {
                 movie.setDescription(description);
                 movie.setFormat(format);
                 movie.setGenreList(gatherGenres(movie));
+                movie.setPosterUrl(posterUrl);
                 collection.add(movie);
             }
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -106,7 +109,20 @@ public class MovieDao {
         return collection;
     }
 
-    private List<String> gatherGenres(Movie movie) {
+    public List<String> listAllGenres() throws SQLException {
+        List<String> genres = new ArrayList<>();
+        String sql = "Select genre from genres";
+        connect();
+        PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
+            genres.add(rs.getString("genre"));
+        }
+        disconnect();
+        return genres;
+    }
+
+    public List<String> gatherGenres(Movie movie) {
         List<String> genres = new ArrayList<>();
         String sql =  "select m.movie_id, g.genre from movie_genres mg" +
                 " inner join movies m  on m.movie_id = mg.movie_id " +
@@ -155,7 +171,7 @@ public class MovieDao {
     }
 
     public boolean updateMovie(Movie movie) {
-        String sql = "UPDATE movies SET title =?, release_year=?, runtime=?, director=?, rating=?, description=?, format=? " + "WHERE movie_id=?";
+        String sql = "UPDATE movies SET title =?, release_year=?, format=? " + "WHERE movie_id=?";
         String deleteGenres = "DELETE FROM movie_genres where movie_id=?";
 
         try {
@@ -168,14 +184,8 @@ public class MovieDao {
 
             statement.setString(1, movie.getTitle());
             statement.setInt(2, movie.getReleaseYear());
-            statement.setInt(3, movie.getRuntime());
-            statement.setString(4, movie.getDirector());
-            statement.setString(5, movie.getRating());
-            statement.setString(6, movie.getDescription());
-            statement.setString(7, movie.getFormat());
-            statement.setInt(8, movie.getMovieId());
-
-
+            statement.setString(3, movie.getFormat().toString());
+            statement.setInt(4,movie.getMovieId());
             boolean update =  statement.executeUpdate() > 0;
 
             if(update) {
@@ -191,13 +201,16 @@ public class MovieDao {
     }
 
     public boolean deleteMovie(Movie movie) {
-        String sql = "DELETE FROM movies WHERE movie_id=?";
+        String movieStmnt = "DELETE FROM movies WHERE movie_id=?";
+        String joinStmnt = "DELETE FROM movie_genres WHERE movie_id=?";
 
         try {
             connect();
-            PreparedStatement statement = jdbcConnection.prepareStatement(sql);
-            statement.setInt(1, movie.getMovieId());
-            return statement.executeUpdate() > 0;
+            PreparedStatement movieTable = jdbcConnection.prepareStatement(movieStmnt);
+            PreparedStatement joinTable = jdbcConnection.prepareStatement(joinStmnt);
+            movieTable.setInt(1, movie.getMovieId());
+            joinTable.setInt(1, movie.getMovieId());
+            return joinTable.executeUpdate()+ movieTable.executeUpdate() > 0;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
@@ -225,6 +238,35 @@ public class MovieDao {
                 movie.setRating(resultSet.getString(7));
                 movie.setDescription(resultSet.getString(8));
                 movie.setFormat(Formats.valueOf(resultSet.getString(9)));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            disconnect();
+        }
+        return movie;
+    }
+
+    public Movie getMovieById(int id) {
+        Movie movie = new Movie();
+        String sql = "SELECT * FROM movies where movie_id=?";
+
+        try {
+            connect();
+            PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                movie.setMovieId(resultSet.getInt(1));
+                movie.setTitle(resultSet.getString(2));
+                movie.setReleaseYear(resultSet.getInt(3));
+                movie.setRuntime(resultSet.getInt(5));
+                movie.setDirector(resultSet.getString(6));
+                movie.setRating(resultSet.getString(7));
+                movie.setDescription(resultSet.getString(8));
+                movie.setFormat(Formats.valueOf(resultSet.getString(9)));
+                movie.setPosterUrl(resultSet.getString(10));
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
