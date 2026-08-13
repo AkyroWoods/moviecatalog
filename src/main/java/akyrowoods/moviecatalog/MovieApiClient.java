@@ -25,7 +25,7 @@ public class MovieApiClient {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             apiResponse = response.body().replace("min", "");
         } catch (Exception e) {
-            throw new RuntimeException("Api Request Failed: " + e.getMessage());
+            throw new RuntimeException("Api Request Failed: ", e);
         }
         return apiResponse;
     }
@@ -41,7 +41,7 @@ public class MovieApiClient {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             apiResponse = response.body().replace("min", "");
         } catch (Exception e) {
-            throw new RuntimeException("Api Request Failed: " + e.getMessage());
+            throw new RuntimeException("Api Request Failed: ", e);
 
         }
         return apiResponse;
