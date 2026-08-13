@@ -152,22 +152,27 @@ public class MovieDao {
         String insertGenre = "INSERT INTO genres (genre) VALUES (?) ON CONFLICT (genre) DO UPDATE SET genre=EXCLUDED.genre RETURNING genre_id";
         String insertIntoMovie_GenresTable = "INSERT INTO movie_genres (movie_id, genre_id) VALUES (?,?)";
 
-        PreparedStatement statement = jdbcConnection.prepareStatement(insertGenre);
-        PreparedStatement join = jdbcConnection.prepareStatement(insertIntoMovie_GenresTable);
+        try (PreparedStatement statement = jdbcConnection.prepareStatement(insertGenre);
+             PreparedStatement join = jdbcConnection.prepareStatement(insertIntoMovie_GenresTable)) {
 
-        for (String genres : movie.getGenreList()) {
-            statement.setString(1, genres);
-            ResultSet genreId = statement.executeQuery();
+            for (String genres : movie.getGenreList()) {
+                statement.setString(1, genres);
+                ResultSet genreId = statement.executeQuery();
 
-            int genreValue = 0;
-            if (genreId.next()) {
-                genreValue = genreId.getInt(1);
+                int genreValue = 0;
+                if (genreId.next()) {
+                    genreValue = genreId.getInt(1);
+                }
+
+                join.setInt(1, movie.getMovieId());
+                join.setInt(2, genreValue);
+                join.executeUpdate();
+                genreId.close();
             }
-
-            join.setInt(1, movie.getMovieId());
-            join.setInt(2, genreValue);
-            join.executeUpdate();
-            genreId.close();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to insert generes into genere and movie_genre table", e);
+        } finally {
+            disconnect();
         }
     }
 
