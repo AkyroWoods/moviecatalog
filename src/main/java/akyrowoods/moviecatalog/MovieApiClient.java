@@ -15,10 +15,10 @@ public class MovieApiClient {
     }
 
     public String fetchMovie(String title) {
-        String sanitizedTitle = formatter.sanitizeMovieTitle(title);
+        String sanitizedTitle = title;
         String apiResponse = "";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://www.omdbapi.com/?i=tt3896198&apikey=3c4dc7f5" + "&t=" + sanitizedTitle + "&plot=full"))
+                .uri(URI.create("http://www.omdbapi.com/?apikey=3c4dc7f5" + "&t=" + sanitizedTitle + "&plot=full"))
                 .GET().build();
 
         try {
@@ -34,7 +34,7 @@ public class MovieApiClient {
         String sanitizedTitle = formatter.sanitizeMovieTitle(title);
         String apiResponse = "";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://www.omdbapi.com/?i=tt3896198&apikey=3c4dc7f5" + "&t=" + sanitizedTitle + "&Y=" + releaseYear + "&plot=full"))
+                .uri(URI.create("http://www.omdbapi.com?/apikey=3c4dc7f5" + "&t=" + sanitizedTitle + "&Y=" + releaseYear + "&plot=full"))
                 .GET().build();
 
         try {
