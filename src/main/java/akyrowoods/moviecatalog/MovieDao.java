@@ -20,8 +20,8 @@ public class MovieDao {
         try {
             Class.forName("org.postgresql.Driver");
             this.jdbcConnection = DriverManager.getConnection(jdbcUrl, username, password);
-        } catch (Exception e) {
-            System.out.println("Database access error or url is null " + e.getMessage());
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException("Failed to connect to database", e);
         }
     }
 
@@ -30,8 +30,8 @@ public class MovieDao {
             if (jdbcConnection != null && !jdbcConnection.isClosed()) {
                 jdbcConnection.close();
             }
-        } catch (Exception e) {
-            System.out.println("Database access error: " + e.getMessage());
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not close database connection", e);
         }
     }
 
@@ -39,27 +39,30 @@ public class MovieDao {
         String sql = "INSERT INTO movies (title, release_year, runtime, director, rating, description, format, poster_url) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         connect();
-        PreparedStatement statement = jdbcConnection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement statement = jdbcConnection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setString(1, movie.getTitle());
+            statement.setInt(2, movie.getReleaseYear());
+            statement.setInt(3, movie.getRuntime());
+            statement.setString(4, movie.getDirector());
+            statement.setString(5, movie.getRating());
+            statement.setString(6, movie.getDescription());
+            statement.setString(7, movie.getFormat().toString());
+            statement.setString(8, movie.getPosterUrl());
 
-        statement.setString(1, movie.getTitle());
-        statement.setInt(2, movie.getReleaseYear());
-        statement.setInt(3, movie.getRuntime());
-        statement.setString(4, movie.getDirector());
-        statement.setString(5, movie.getRating());
-        statement.setString(6, movie.getDescription());
-        statement.setString(7, movie.getFormat().toString());
-        statement.setString(8, movie.getPosterUrl());
+            int insertedRow = statement.executeUpdate();
+            if (insertedRow > 0) {
+                ResultSet keyValue = statement.getGeneratedKeys();
+                if (keyValue.next())
+                    movie.setMovieId(keyValue.getInt(1));
 
-        int insertedRow = statement.executeUpdate();
-        if (insertedRow > 0) {
-            ResultSet keyValue = statement.getGeneratedKeys();
-            if (keyValue.next()) {
-                movie.setMovieId(keyValue.getInt(1));
+                insertGenres(movie);
             }
+            return insertedRow > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not insert " + movie.getTitle()+  "into the database", e);
+        } finally {
+            disconnect();
         }
-        insertGenres(movie);
-        disconnect();
-        return insertedRow > 0;
     }
 
     public List<Movie> listAllMovies() throws SQLException {
@@ -101,6 +104,7 @@ public class MovieDao {
     public List<String> listAllGenres() throws SQLException {
         List<String> genres = new ArrayList<>();
         String sql = "Select genre from genres";
+
         connect();
         PreparedStatement statement = jdbcConnection.prepareStatement(sql);
         ResultSet rs = statement.executeQuery();
@@ -120,7 +124,7 @@ public class MovieDao {
         connect();
 
         try (PreparedStatement statement = jdbcConnection.prepareStatement(sql)
-        ){
+        ) {
             statement.setInt(1, movie.getMovieId());
             ResultSet rs = statement.executeQuery();
 
@@ -159,101 +163,100 @@ public class MovieDao {
         }
     }
 
-public boolean updateMovie(Movie movie) {
-    String sql =
-            "UPDATE movies " +
-                    "SET title=?, release_year=?, format=?, description=? " +
-                    "WHERE movie_id=?";
+    public boolean updateMovie(Movie movie) {
+        String sql =
+                "UPDATE movies " +
+                        "SET title=?, release_year=?, format=?, description=? " +
+                        "WHERE movie_id=?";
 
-    String deleteGenres = "DELETE FROM movie_genres where movie_id=?";
-    connect();
+        String deleteGenres = "DELETE FROM movie_genres where movie_id=?";
+        connect();
 
-    try (
-            PreparedStatement statement = jdbcConnection.prepareStatement(sql);
-            PreparedStatement genres = jdbcConnection.prepareStatement(deleteGenres);
-    ) {
+        try (
+                PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+                PreparedStatement genres = jdbcConnection.prepareStatement(deleteGenres);
+        ) {
 
-        genres.setInt(1, movie.getMovieId());
-        genres.executeUpdate();
+            genres.setInt(1, movie.getMovieId());
+            genres.executeUpdate();
 
-        statement.setString(1, movie.getTitle());
-        statement.setInt(2, movie.getReleaseYear());
-        statement.setString(3, movie.getFormat().toString());
-        statement.setString(4, movie.getDescription());
-        statement.setInt(5, movie.getMovieId());
-        boolean update = statement.executeUpdate() > 0;
+            statement.setString(1, movie.getTitle());
+            statement.setInt(2, movie.getReleaseYear());
+            statement.setString(3, movie.getFormat().toString());
+            statement.setString(4, movie.getDescription());
+            statement.setInt(5, movie.getMovieId());
+            boolean update = statement.executeUpdate() > 0;
 
-        if (update) {
-            insertGenres(movie); //update genres
+            if (update) {
+                insertGenres(movie); //update genres
+            }
+
+            return update;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            disconnect();
         }
+    }
 
-        return update;
-    } catch (SQLException e) {
-        throw new RuntimeException(e);
-    } finally {
+    public boolean deleteMovie(Movie movie) {
+        String movieStmnt = "DELETE FROM movies WHERE movie_id=?";
+        String joinStmnt = "DELETE FROM movie_genres WHERE movie_id=?";
+        connect();
+
+        try (
+                PreparedStatement movieTable = jdbcConnection.prepareStatement(movieStmnt);
+                PreparedStatement joinTable = jdbcConnection.prepareStatement(joinStmnt);
+        ) {
+            movieTable.setInt(1, movie.getMovieId());
+            joinTable.setInt(1, movie.getMovieId());
+            return joinTable.executeUpdate() + movieTable.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Failed to update movie: " + e.getMessage());
+            return false;
+        } finally {
+            disconnect();
+        }
+    }
+
+    public Movie getMovieByTitle(String title) throws SQLException {
+        Movie movie = new Movie();
+        String sql = "SELECT * FROM movies where title=?";
+
+        connect();
+        PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+        statement.setString(1, title);
+        ResultSet rs = statement.executeQuery();
+
+        return getMovie(movie, rs);
+    }
+
+    private Movie getMovie(Movie movie, ResultSet rs) throws SQLException {
+        if (rs.next()) {
+            movie.setMovieId(rs.getInt("movie_id"));
+            movie.setTitle(rs.getString("title"));
+            movie.setReleaseYear(rs.getInt("release_year"));
+            movie.setRuntime(rs.getInt("runtime"));
+            movie.setDirector(rs.getString("director"));
+            movie.setRating(rs.getString("rating"));
+            movie.setDescription(rs.getString("description"));
+            movie.setFormat(Formats.valueOf(rs.getString("format")));
+            movie.setPosterUrl(rs.getString("poster_url"));
+        }
         disconnect();
+        return movie;
     }
-}
 
-public boolean deleteMovie(Movie movie) {
-    String movieStmnt = "DELETE FROM movies WHERE movie_id=?";
-    String joinStmnt = "DELETE FROM movie_genres WHERE movie_id=?";
-    connect();
+    public Movie getMovieById(int id) throws SQLException {
+        Movie movie = new Movie();
+        String sql = "SELECT * FROM movies where movie_id=?";
 
-    try (
-            PreparedStatement movieTable = jdbcConnection.prepareStatement(movieStmnt);
-            PreparedStatement joinTable = jdbcConnection.prepareStatement(joinStmnt);
-    ) {
-        movieTable.setInt(1, movie.getMovieId());
-        joinTable.setInt(1, movie.getMovieId());
-        return joinTable.executeUpdate() + movieTable.executeUpdate() > 0;
-    } catch (SQLException e) {
-        System.out.println("Failed to update movie: " + e.getMessage());
-        return false;
-    } finally {
-        disconnect();
+        connect();
+        PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+        statement.setInt(1, id);
+        ResultSet rs = statement.executeQuery();
+
+        return getMovie(movie, rs);
     }
-}
-
-public Movie getMovieByTitle(String title) throws SQLException {
-    Movie movie = new Movie();
-    String sql = "SELECT * FROM movies where title=?";
-
-
-    connect();
-    PreparedStatement statement = jdbcConnection.prepareStatement(sql);
-    statement.setString(1, title);
-    ResultSet rs = statement.executeQuery();
-
-    return getMovie(movie, rs);
-}
-
-private Movie getMovie(Movie movie, ResultSet rs) throws SQLException {
-    if (rs.next()) {
-        movie.setMovieId(rs.getInt("movie_id"));
-        movie.setTitle(rs.getString("title"));
-        movie.setReleaseYear(rs.getInt("release_year"));
-        movie.setRuntime(rs.getInt("runtime"));
-        movie.setDirector(rs.getString("director"));
-        movie.setRating(rs.getString("rating"));
-        movie.setDescription(rs.getString("description"));
-        movie.setFormat(Formats.valueOf(rs.getString("format")));
-        movie.setPosterUrl(rs.getString("poster_url"));
-    }
-    disconnect();
-    return movie;
-}
-
-public Movie getMovieById(int id) throws SQLException {
-    Movie movie = new Movie();
-    String sql = "SELECT * FROM movies where movie_id=?";
-
-    connect();
-    PreparedStatement statement = jdbcConnection.prepareStatement(sql);
-    statement.setInt(1, id);
-    ResultSet rs = statement.executeQuery();
-
-    return getMovie(movie, rs);
-}
 
 }
