@@ -62,7 +62,7 @@ public class ControllerServlet extends HttpServlet{
         String title = request.getParameter("title");
         Movie movie = movieDao.getMovieByTitle(title);
         System.out.println(movie.getTitle());
-        if (movie.getTitle() == null) {
+        if (movie.getMovieId() == 0) {
              throw new ServletException("No movie found for: " + title);
         } else {
             request.setAttribute("movie", movie);
@@ -74,11 +74,7 @@ public class ControllerServlet extends HttpServlet{
 
     private void listAllMovies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         List<Movie> movieCollection = movieDao.listAllMovies();
-        for(Movie m: movieCollection) {
-            List<String> movieGenres = movieDao.gatherGenres(m);
-            m.setGenreList(movieGenres);
-        }
-        System.out.println("Movies loaded: " + movieCollection.size());
+
         request.setAttribute("movies", movieCollection);
         RequestDispatcher dispatcher = request.getRequestDispatcher("Collection.jsp");
         dispatcher.forward(request,response);
@@ -92,8 +88,6 @@ public class ControllerServlet extends HttpServlet{
         int movieId = Integer.parseInt(request.getParameter("movieId"));
         Movie movie = movieDao.getMovieById(movieId);
         List<String> allGenres = movieDao.listAllGenres();
-        List<String> movieGenres = movieDao.gatherGenres(movie);
-        movie.setGenreList(movieGenres);
 
         request.setAttribute("movie", movie);
         request.setAttribute("allGenres", allGenres);
@@ -102,7 +96,7 @@ public class ControllerServlet extends HttpServlet{
         dispatcher.forward(request, response);
     }
     private void insertMovie(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
-        String title = request.getParameter("title").replace(" ", "+");
+        String title = request.getParameter("title");
         String format = request.getParameter("format");
         int releaseYear = 0;
         Movie movie;
@@ -120,8 +114,6 @@ public class ControllerServlet extends HttpServlet{
     private void showMovieDetails(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         int movieId = Integer.parseInt(request.getParameter("movieId"));
         Movie movie = movieDao.getMovieById(movieId);
-        List<String> genre = movieDao.gatherGenres(movie);
-        movie.setGenreList(genre);
         request.setAttribute("movie", movie);
         RequestDispatcher dispatcher = request.getRequestDispatcher("Details.jsp");
         dispatcher.forward(request,response);
