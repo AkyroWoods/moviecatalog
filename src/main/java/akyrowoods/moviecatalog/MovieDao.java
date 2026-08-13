@@ -107,7 +107,7 @@ public class MovieDao {
 
     public List<String> listAllGenres() {
         List<String> genres = new ArrayList<>();
-        String sql = "Select genre from genres";
+        String sql = "SELECT genre FROM genres";
 
         connect();
         try (PreparedStatement statement = jdbcConnection.prepareStatement(sql);
@@ -252,6 +252,7 @@ public class MovieDao {
             movie.setDescription(rs.getString("description"));
             movie.setFormat(Formats.valueOf(rs.getString("format")));
             movie.setPosterUrl(rs.getString("poster_url"));
+            movie.setGenreList(gatherGenres(movie));
         }
         return movie;
     }
