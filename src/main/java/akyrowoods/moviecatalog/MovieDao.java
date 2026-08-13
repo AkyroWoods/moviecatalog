@@ -110,12 +110,17 @@ public class MovieDao {
         String sql = "Select genre from genres";
 
         connect();
-        PreparedStatement statement = jdbcConnection.prepareStatement(sql);
-        ResultSet rs = statement.executeQuery();
-        while (rs.next()) {
-            genres.add(rs.getString("genre"));
+        try (PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+                ResultSet rs = statement.executeQuery()) {
+
+            while (rs.next()) {
+                genres.add(rs.getString("genre"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to collect all genres", e);
+        } finally {
+            disconnect();
         }
-        disconnect();
         return genres;
     }
 
@@ -127,8 +132,7 @@ public class MovieDao {
                 "where m.movie_id = ?";
         connect();
 
-        try (PreparedStatement statement = jdbcConnection.prepareStatement(sql)
-        ) {
+        try (PreparedStatement statement = jdbcConnection.prepareStatement(sql)) {
             statement.setInt(1, movie.getMovieId());
             ResultSet rs = statement.executeQuery();
 
