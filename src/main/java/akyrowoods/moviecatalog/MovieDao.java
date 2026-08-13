@@ -35,7 +35,7 @@ public class MovieDao {
         }
     }
 
-    public boolean insertMovie(Movie movie) throws SQLException {
+    public boolean insertMovie(Movie movie) {
         String sql = "INSERT INTO movies (title, release_year, runtime, director, rating, description, format, poster_url) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         connect();
@@ -65,39 +65,43 @@ public class MovieDao {
         }
     }
 
-    public List<Movie> listAllMovies() throws SQLException {
+    public List<Movie> listAllMovies() {
         List<Movie> collection = new ArrayList<>();
         String sql = "Select * from movies";
 
         connect();
-        Statement statement = jdbcConnection.createStatement();
-        ResultSet rs = statement.executeQuery(sql);
+        try (Statement statement = jdbcConnection.createStatement();
+              ResultSet rs = statement.executeQuery(sql)) {
 
-        while (rs.next()) {
-            int movieId = rs.getInt("movie_id");
-            String title = rs.getString("title");
-            int releaseYear = rs.getInt("release_year");
-            int runTime = rs.getInt("runtime");
-            String director = rs.getString("director");
-            String rating = rs.getString("rating");
-            String description = rs.getString("description");
-            Formats format = Formats.valueOf(rs.getString("format"));
-            String posterUrl = rs.getString("poster_url");
+            while (rs.next()) {
+                int movieId = rs.getInt("movie_id");
+                String title = rs.getString("title");
+                int releaseYear = rs.getInt("release_year");
+                int runTime = rs.getInt("runtime");
+                String director = rs.getString("director");
+                String rating = rs.getString("rating");
+                String description = rs.getString("description");
+                Formats format = Formats.valueOf(rs.getString("format"));
+                String posterUrl = rs.getString("poster_url");
 
-            Movie movie = new Movie();
-            movie.setMovieId(movieId);
-            movie.setTitle(title);
-            movie.setReleaseYear(releaseYear);
-            movie.setRuntime(runTime);
-            movie.setDirector(director);
-            movie.setRating(rating);
-            movie.setDescription(description);
-            movie.setFormat(format);
-            movie.setGenreList(gatherGenres(movie));
-            movie.setPosterUrl(posterUrl);
-            collection.add(movie);
+                Movie movie = new Movie();
+                movie.setMovieId(movieId);
+                movie.setTitle(title);
+                movie.setReleaseYear(releaseYear);
+                movie.setRuntime(runTime);
+                movie.setDirector(director);
+                movie.setRating(rating);
+                movie.setDescription(description);
+                movie.setFormat(format);
+                movie.setGenreList(gatherGenres(movie));
+                movie.setPosterUrl(posterUrl);
+                collection.add(movie);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to list all movies", e);
+        } finally {
+            disconnect();
         }
-        disconnect();
         return collection;
     }
 
