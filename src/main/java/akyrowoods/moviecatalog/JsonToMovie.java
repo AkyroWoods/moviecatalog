@@ -1,5 +1,6 @@
 package akyrowoods.moviecatalog;
 
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 import java.util.List;
 
@@ -12,34 +13,21 @@ public class JsonToMovie {
 
     public Movie convertToMovie(String json)  {
         try {
-            return  objectMapper.readValue(json, Movie.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            return objectMapper.readValue(json, Movie.class);
+        } catch (JacksonException e) {
+            throw new RuntimeException("Could not deserialize movie", e);
         }
     }
 
-    public Formats sanitizeFormat(String format) {
-        String sanitizedFormat = format.trim()
-                .replace("-", "_")
-                .replace(" ", "_")
-                .replace("4k", "UHD_4k")
-                .toUpperCase();
-
-        return Formats.valueOf(sanitizedFormat);
-
-    }
     public String sanitizeMovieTitle(String title) {
-        String sanitizedFormat = title.trim()
-                .replace(" ", "+");
-        return title;
+        return title.trim().replace(" ", "+");
     }
 
     public Movie movieAssembler(String json, String movieFormat) {
         Movie movie = convertToMovie(json);
         List<String> genres = movie.buildGenreListFromCsv(movie.getGenreCsv());
         movie.setGenreList(genres);
-        Formats format = sanitizeFormat(movieFormat);
-        movie.setFormat(format);
+        movie.setFormat(Formats.valueOf(movieFormat));
         return movie;
     }
 
