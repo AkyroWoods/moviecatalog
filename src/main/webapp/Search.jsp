@@ -26,7 +26,7 @@
 
 <c:if test="${empty movie}">
     <h2>No movie found.</h2>
-    <a href="${pageContext.request.contextPath}/list" class="back-btn">Back</a>
+    <a href="${pageContext.request.contextPath}/error" class="back-btn">Back</a>
 </c:if>
 
 </body>

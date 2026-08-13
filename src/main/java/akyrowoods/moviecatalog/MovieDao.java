@@ -35,9 +35,9 @@ public class MovieDao {
         }
     }
 
-    public boolean insertMovie(Movie movie) {
+    public boolean insertMovie(Movie movie) throws SQLException {
         String sql = "INSERT INTO movies (title, release_year, runtime, director, rating, description, format, poster_url) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try {
+
             connect();
             PreparedStatement statement = jdbcConnection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
@@ -58,19 +58,14 @@ public class MovieDao {
                 }
             }
             insertGenres(movie);
+        disconnect();
             return insertedRow > 0;
-        } catch (Exception e) {
-            System.out.println("Error occurred:" + e.getMessage());
-            return false;
-        } finally {
-            disconnect();
-        }
     }
 
-    public List<Movie> listAllMovies() {
+    public List<Movie> listAllMovies() throws SQLException {
         List<Movie> collection = new ArrayList<>();
         String sql = "Select * from movies";
-        try {
+
             connect();
             Statement statement = jdbcConnection.createStatement();
             ResultSet rs = statement.executeQuery(sql);
@@ -99,11 +94,7 @@ public class MovieDao {
                 movie.setPosterUrl(posterUrl);
                 collection.add(movie);
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        } finally {
             disconnect();
-        }
         return collection;
     }
 
@@ -169,7 +160,11 @@ public class MovieDao {
     }
 
     public boolean updateMovie(Movie movie) {
-        String sql = "UPDATE movies SET title =?, release_year=?, format=? " + "WHERE movie_id=?";
+        String sql =
+                "UPDATE movies " +
+                        "SET title=?, release_year=?, format=?, description=? " +
+                        "WHERE movie_id=?";
+
         String deleteGenres = "DELETE FROM movie_genres where movie_id=?";
 
         try {
@@ -183,7 +178,8 @@ public class MovieDao {
             statement.setString(1, movie.getTitle());
             statement.setInt(2, movie.getReleaseYear());
             statement.setString(3, movie.getFormat().toString());
-            statement.setInt(4,movie.getMovieId());
+            statement.setString(4, movie.getDescription());
+            statement.setInt(5,movie.getMovieId());
             boolean update =  statement.executeUpdate() > 0;
 
             if(update) {
@@ -217,11 +213,11 @@ public class MovieDao {
         }
     }
 
-    public Movie getMovieByTitle(String title) {
+    public Movie getMovieByTitle(String title) throws SQLException {
         Movie movie = new Movie();
         String sql = "SELECT * FROM movies where title=?";
 
-        try {
+
             connect();
             PreparedStatement statement = jdbcConnection.prepareStatement(sql);
             statement.setString(1, title);
@@ -238,19 +234,14 @@ public class MovieDao {
                  movie.setFormat(Formats.valueOf(rs.getString("format")));
                  movie.setPosterUrl(rs.getString("poster_url"));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
             disconnect();
-        }
         return movie;
     }
 
-    public Movie getMovieById(int id) {
+    public Movie getMovieById(int id) throws SQLException {
         Movie movie = new Movie();
         String sql = "SELECT * FROM movies where movie_id=?";
 
-        try {
             connect();
             PreparedStatement statement = jdbcConnection.prepareStatement(sql);
             statement.setInt(1, id);
@@ -267,11 +258,7 @@ public class MovieDao {
                 movie.setFormat(Formats.valueOf(rs.getString("format")));
                 movie.setPosterUrl(rs.getString("poster_url"));
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        } finally {
             disconnect();
-        }
         return movie;
     }
 

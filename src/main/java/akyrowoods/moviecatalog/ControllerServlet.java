@@ -132,11 +132,13 @@ public class ControllerServlet extends HttpServlet{
         String title = request.getParameter("title");
         String format = request.getParameter("format");
         String[] genres = request.getParameterValues("genres");
+        String description = request.getParameter("description");
 
         Movie movie = movieDao.getMovieById(movieId);
         movie.setTitle(title);
         movie.setFormat(Formats.valueOf(format));
         movie.setGenreList(Arrays.stream(genres).toList());
+        movie.setDescription(description);
         movieDao.updateMovie(movie);
 
         response.sendRedirect("list");
