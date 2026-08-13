@@ -52,21 +52,27 @@ public class ControllerServlet extends HttpServlet{
                 default -> listAllMovies(request, response);
             }
         } catch (Exception e) {
-            throw new ServletException(e);
+            request.setAttribute("errormessage", e.getMessage());
+            RequestDispatcher dispatcher = request.getRequestDispatcher("Error.jsp");
+            dispatcher.forward(request, response);
         }
     }
 
-    private void searchMovie(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    private void searchMovie(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, SQLException {
         String title = request.getParameter("title");
         Movie movie = movieDao.getMovieByTitle(title);
+        System.out.println(movie.getTitle());
+        if (movie.getTitle() == null) {
+             throw new ServletException("No movie found for: " + title);
+        } else {
+            request.setAttribute("movie", movie);
+            System.out.println(movie.getPosterUrl());
+            request.getRequestDispatcher("Search.jsp").forward(request,response);
+        }
 
-        request.setAttribute("movie", movie);
-        System.out.println(movie.getPosterUrl());
-        RequestDispatcher dispatcher = request.getRequestDispatcher("Search.jsp");
-        dispatcher.forward(request,response);
     }
 
-    private void listAllMovies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void listAllMovies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         List<Movie> movieCollection = movieDao.listAllMovies();
         for(Movie m: movieCollection) {
             List<String> movieGenres = movieDao.gatherGenres(m);
@@ -95,7 +101,7 @@ public class ControllerServlet extends HttpServlet{
         RequestDispatcher dispatcher = request.getRequestDispatcher("EditMovie.jsp");
         dispatcher.forward(request, response);
     }
-    private void insertMovie(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void insertMovie(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
         String title = request.getParameter("title").replace(" ", "+");
         String format = request.getParameter("format");
         int releaseYear = 0;
@@ -111,7 +117,7 @@ public class ControllerServlet extends HttpServlet{
         response.sendRedirect("list");
     }
 
-    private void showMovieDetails(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void showMovieDetails(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         int movieId = Integer.parseInt(request.getParameter("movieId"));
         Movie movie = movieDao.getMovieById(movieId);
         List<String> genre = movieDao.gatherGenres(movie);
@@ -121,7 +127,7 @@ public class ControllerServlet extends HttpServlet{
         dispatcher.forward(request,response);
     }
 
-    private void updateMovie(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void updateMovie(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
         int movieId = Integer.parseInt(request.getParameter("movieId"));
         String title = request.getParameter("title");
         String format = request.getParameter("format");
@@ -136,7 +142,7 @@ public class ControllerServlet extends HttpServlet{
         response.sendRedirect("list");
     }
 
-    private void deleteMovie(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void deleteMovie(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
         int movieId = Integer.parseInt(request.getParameter("movieId"));
         Movie movie = movieDao.getMovieById(movieId);
         movieDao.deleteMovie(movie);

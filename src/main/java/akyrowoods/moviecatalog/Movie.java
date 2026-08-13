@@ -90,6 +90,9 @@ public class Movie {
     public void setGenreCsv(String genreCsv) {this.genreCsv = genreCsv;}
 
     public List<String> buildGenreListFromCsv(String genreCsv) {
+    if (genreCsv == null || genreCsv.isBlank())
+    throw new NullPointerException("Movie not found: " + getTitle());
+
         return (Arrays.stream(genreCsv.split(","))
                 .map(String::trim)
                 .toList());

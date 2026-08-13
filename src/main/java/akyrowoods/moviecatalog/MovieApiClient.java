@@ -18,15 +18,14 @@ public class MovieApiClient {
         String sanitizedTitle = formatter.sanitizeMovieTitle(title);
         String apiResponse = "";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://www.omdbapi.com/?i=tt3896198&apikey=3c4dc7f5" + "&t=" + sanitizedTitle))
+                .uri(URI.create("http://www.omdbapi.com/?i=tt3896198&apikey=3c4dc7f5" + "&t=" + sanitizedTitle + "&plot=full"))
                 .GET().build();
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             apiResponse = response.body().replace("min", "");
         } catch (Exception e) {
-            System.out.println("Error Occurred: " + e.getMessage());
-
+            throw new RuntimeException("Api Request Failed: " + e.getMessage());
         }
         return apiResponse;
     }
@@ -35,14 +34,14 @@ public class MovieApiClient {
         String sanitizedTitle = formatter.sanitizeMovieTitle(title);
         String apiResponse = "";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://www.omdbapi.com/?i=tt3896198&apikey=3c4dc7f5" + "&t=" + sanitizedTitle + "&Y=" + releaseYear))
+                .uri(URI.create("http://www.omdbapi.com/?i=tt3896198&apikey=3c4dc7f5" + "&t=" + sanitizedTitle + "&Y=" + releaseYear + "&plot=full"))
                 .GET().build();
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             apiResponse = response.body().replace("min", "");
         } catch (Exception e) {
-            System.out.println("Error Occurred: " + e.getMessage());
+            throw new RuntimeException("Api Request Failed: " + e.getMessage());
 
         }
         return apiResponse;
