@@ -105,7 +105,7 @@ public class MovieDao {
         return collection;
     }
 
-    public List<String> listAllGenres() throws SQLException {
+    public List<String> listAllGenres() {
         List<String> genres = new ArrayList<>();
         String sql = "Select genre from genres";
 
@@ -174,9 +174,7 @@ public class MovieDao {
     }
 
     public boolean updateMovie(Movie movie) {
-        String sql =
-                "UPDATE movies " +
-                        "SET title=?, release_year=?, format=?, description=? " +
+        String sql = "UPDATE movies SET title=?, release_year=?, format=?, description=? " +
                         "WHERE movie_id=?";
 
         String deleteGenres = "DELETE FROM movie_genres where movie_id=?";
