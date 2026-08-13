@@ -237,11 +237,15 @@ public class MovieDao {
         String sql = "SELECT * FROM movies where title=?";
 
         connect();
-        PreparedStatement statement = jdbcConnection.prepareStatement(sql);
-        statement.setString(1, title);
-        ResultSet rs = statement.executeQuery();
-
-        return getMovie(movie, rs);
+        try (PreparedStatement statement = jdbcConnection.prepareStatement(sql)) {
+            statement.setString(1, title);
+            ResultSet rs = statement.executeQuery();
+            return getMovie(movie, rs);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve " + title, e);
+        } finally {
+            disconnect();
+        }
     }
 
     private Movie getMovie(Movie movie, ResultSet rs) throws SQLException {
