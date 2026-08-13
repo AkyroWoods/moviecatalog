@@ -59,22 +59,18 @@ public class ControllerServlet extends HttpServlet{
     }
 
     private void searchMovie(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, SQLException {
-        String title = request.getParameter("title");
+        String title = request.getParameter("title").trim();
         Movie movie = movieDao.getMovieByTitle(title);
-        System.out.println(movie.getTitle());
         if (movie.getMovieId() == 0) {
              throw new ServletException("No movie found for: " + title);
         } else {
             request.setAttribute("movie", movie);
-            System.out.println(movie.getPosterUrl());
             request.getRequestDispatcher("Search.jsp").forward(request,response);
         }
-
     }
 
     private void listAllMovies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         List<Movie> movieCollection = movieDao.listAllMovies();
-
         request.setAttribute("movies", movieCollection);
         RequestDispatcher dispatcher = request.getRequestDispatcher("Collection.jsp");
         dispatcher.forward(request,response);

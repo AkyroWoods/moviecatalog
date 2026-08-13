@@ -1,9 +1,11 @@
 package akyrowoods.moviecatalog;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 public class MovieApiClient {
     private final HttpClient client;
@@ -15,7 +17,7 @@ public class MovieApiClient {
     }
 
     public String fetchMovie(String title) {
-        String sanitizedTitle = title;
+        String sanitizedTitle = formatter.sanitizeMovieTitle(title);
         String apiResponse = "";
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://www.omdbapi.com/?apikey=3c4dc7f5" + "&t=" + sanitizedTitle + "&plot=full"))
@@ -34,7 +36,7 @@ public class MovieApiClient {
         String sanitizedTitle = formatter.sanitizeMovieTitle(title);
         String apiResponse = "";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://www.omdbapi.com?/apikey=3c4dc7f5" + "&t=" + sanitizedTitle + "&Y=" + releaseYear + "&plot=full"))
+                .uri(URI.create("http://www.omdbapi.com/?apikey=3c4dc7f5" + "&t=" + sanitizedTitle + "&y=" + releaseYear + "&plot=full"))
                 .GET().build();
 
         try {

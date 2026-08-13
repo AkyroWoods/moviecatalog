@@ -20,7 +20,7 @@ public class JsonToMovie {
     }
 
     public String sanitizeMovieTitle(String title) {
-        return title.trim().replace(" ", "+");
+        return title.replace(" ", "+".trim());
     }
 
     public Movie movieAssembler(String json, String movieFormat) {
