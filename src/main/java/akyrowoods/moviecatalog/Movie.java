@@ -35,6 +35,9 @@ public class Movie {
     @JsonProperty("Poster")
     private String posterUrl;
 
+    private String edition;
+    private Integer discCount;
+
     public Movie() {
 
     }
@@ -126,6 +129,21 @@ public class Movie {
         this.posterUrl = posterUrl;
     }
 
+    public String getEdition() {
+        return edition;
+    }
+
+    public void setEdition(String edition) {
+        if (edition == null || edition.isBlank()) {
+            this.edition = null;
+        }else
+        this.edition = edition;
+    }
+
+    public Integer getDiscCount() {return discCount;}
+
+    public void setDiscCount(Integer discCount) {this.discCount = discCount;}
+
     @Override
     public String toString() {
         return "Movie{" +
@@ -135,11 +153,12 @@ public class Movie {
                 ", runtime=" + runtime +
                 ", director='" + director + '\'' +
                 ", rating='" + rating + '\'' +
-                ", genreCsv='" + genreCsv + '\'' +
                 ", genreList=" + genreList +
                 ", description='" + description + '\'' +
                 ", format=" + format +
                 ", posterUrl='" + posterUrl + '\'' +
+                ", edition='" + edition + '\'' +
+                ", discCount=" + discCount +
                 '}';
     }
 }

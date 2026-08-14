@@ -23,8 +23,29 @@
         <option value="VHS">VHS</option>
     </select>
 
-    <button type="submit">Add Movie</button>
+    <div class="form-group">
+        <label for="edition">Edition (optional):</label>
+        <select name="edition" id="edition" class="form-control">
+            <option value="">-- None --</option>
+            <option value="Widescreen">Widescreen</option>
+            <option value="Full Screen">Full Screen</option>
+            <option value="Director's Cut">Director's Cut</option>
+            <option value="Collector's Edition">Collector's Edition</option>
+           <option value="Box Set">Box Set</option>
+            <option value="Anniversary">Anniversary</option>
+            <option value="Steelbook">Steelbook</option>
+            <option value="Extended">Extended</option>
+            <option value="Unrated">Unrated</option>
+            <option value="Criterion">Criterion</option>
+        </select>
+    </div>
 
+    <div class="form-group">
+        <label for="discCount">Disc Count (optional):</label>
+        <input type="number" name="discCount" id="discCount"
+               class="form-control" placeholder="e.g., 2" />
+    </div>
+    <button type="submit">Add Movie</button>
 </form>
 
 </body>

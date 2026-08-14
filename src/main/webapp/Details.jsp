@@ -10,20 +10,16 @@
 
 <div class="container">
 
-  <!-- Poster -->
   <img src="${movie.posterUrl}" alt="${movie.title} Poster" class="poster">
 
-  <!-- Title -->
   <h2 style="text-align:center; margin-top:20px;">${movie.title}</h2>
 
-  <!-- Sub Info -->
   <div class="sub-info" style="text-align:center;">
     ${movie.releaseYear} • ${movie.runtime} min • ${movie.format} • ${movie.rating}
   </div>
 
   <div class="grid">
 
-    <!-- Left Column -->
     <div>
       <div class="section-title">Description</div>
       <div class="description">${movie.description}</div>
@@ -34,7 +30,6 @@
       </c:forEach>
     </div>
 
-    <!-- Right Column -->
     <div>
       <div class="section-title">Director</div>
       <p class="description">${movie.director}</p>
@@ -44,11 +39,18 @@
       <p><strong>Release Year:</strong> ${movie.releaseYear}</p>
       <p><strong>Runtime:</strong> ${movie.runtime} minutes</p>
       <p><strong>Rating:</strong> ${movie.rating}</p>
+
+      <c:if test="${not empty movie.edition}">
+        <p><strong>Edition:</strong> ${movie.edition}</p>
+      </c:if>
+
+      <c:if test="${movie.discCount > 0}">
+        <p><strong>Disc Count:</strong> ${movie.discCount}</p>
+      </c:if>
     </div>
 
   </div>
 
-  <!-- Actions -->
   <div class="actions">
     <a href="edit?movieId=${movie.movieId}" class="edit-btn">Edit</a>
     <a href="delete?movieId=${movie.movieId}" class="delete-btn">Delete</a>

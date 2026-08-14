@@ -30,7 +30,17 @@
             </h3>
 
             <p class="sub-info">
-                Year: ${m.releaseYear} | Format: ${m.format}</p>
+                Year: ${m.releaseYear} | Format: ${m.format}
+            </p>
+            <p class = "sub-info">
+                <c:if test="${m.edition != null}">
+                    Edition: ${m.edition}
+                </c:if>
+
+                <c:if test="${m.discCount != null}">
+                    | ${m.discCount} disc(s)
+                </c:if>
+            </p>
 
             <div class="actions">
                 <a href="${pageContext.request.contextPath}/edit?movieId=${m.movieId}" class="edit-btn">Edit</a>

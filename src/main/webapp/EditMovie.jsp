@@ -38,7 +38,6 @@
         <label class="field-label">Description</label>
         <textarea name="description" rows="5" class="description-box">${movie.description}</textarea>
 
-
         <label class="field-label">Genres</label>
         <select name="genres" multiple class="genre-select">
             <c:forEach var="g" items="${allGenres}">
@@ -47,6 +46,26 @@
                 </option>
             </c:forEach>
         </select>
+
+        <label class="field-label">Edition (optional)</label>
+        <select name="edition">
+            <option value="">-- None --</option>
+            <option value="Widescreen" ${movie.edition == 'Widescreen' ? 'selected' : ''}>Widescreen</option>
+            <option value="Full Screen" ${movie.edition == 'Full Screen' ? 'selected' : ''}>Full Screen</option>
+            <option value="Director&#39;s Cut" ${movie.edition == 'Director&#39s Cut' ? "selected" : ""}>Director's Cut</option>
+            <option value="Collector&#39s Edition" ${movie.edition == 'Collector&#39s Edition' ? 'selected' : ''}>Collector&#39s Edition
+            </option>
+            <option value="Box Set" ${movie.edition == "Box Set" ? 'selected' : ''}>Box Set</option>
+            <option value="Anniversary" ${movie.edition == "Anniversary" ? 'selected' : ''}>Anniversary</option>
+            <option value="Steelbook" ${movie.edition == "Steelbook" ? 'selected' : ''}>Steelbook</option>
+            <option value="Extended" ${movie.edition == "Extended" ? 'selected' : ''}>Extended</option>
+            <option value="Unrated" ${movie.edition == "Unrated" ? 'selected' : ''}>Unrated</option>
+            <option value="Criterion" ${movie.edition == "Criterion" ? 'selected' : ''}>Criterion</option>
+        </select>
+
+        <label class="field-label">Disc Count (optional)</label>
+        <input type="number" name="discCount" min="0"
+               value="${movie.discCount != null ? movie.discCount : ''}">
 
         <button type="submit" class="add-btn" style="margin-top:25px;">
             Save Changes
