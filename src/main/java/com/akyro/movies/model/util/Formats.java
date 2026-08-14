@@ -1,4 +1,4 @@
-package akyrowoods.moviecatalog;
+package com.akyro.movies.model.util;
 
 public enum Formats {
     DVD,

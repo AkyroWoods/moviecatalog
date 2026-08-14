@@ -1,4 +1,7 @@
-package akyrowoods.moviecatalog;
+package com.akyro.movies.model.dao;
+
+import com.akyro.movies.model.Movie;
+import com.akyro.movies.model.util.Formats;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;

@@ -4,7 +4,7 @@
 <html>
 <head>
     <title>Select Movie</title>
-    <link rel="stylesheet" href="<c:url value='/css/theme.css' />">
+    <link rel="stylesheet" href="<c:url value='/main/webapp/css/theme.css' />">
 </head>
 
 <body>

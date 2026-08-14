@@ -1,5 +1,6 @@
-package akyrowoods.moviecatalog;
+package com.akyro.movies.model.util;
 
+import com.akyro.movies.model.Movie;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 import java.util.List;

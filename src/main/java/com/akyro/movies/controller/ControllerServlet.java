@@ -1,4 +1,4 @@
-package akyrowoods.moviecatalog;
+package com.akyro.movies.controller;
 
 
 import java.io.IOException;
@@ -7,9 +7,12 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.sun.net.httpserver.Request;
+import com.akyro.movies.model.Movie;
+import com.akyro.movies.model.api.MovieApiClient;
+import com.akyro.movies.model.dao.MovieDao;
+import com.akyro.movies.model.util.Formats;
+import com.akyro.movies.model.util.JsonToMovie;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

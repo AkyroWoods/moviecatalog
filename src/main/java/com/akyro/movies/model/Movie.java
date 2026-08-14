@@ -1,5 +1,6 @@
-package akyrowoods.moviecatalog;
+package com.akyro.movies.model;
 
+import com.akyro.movies.model.util.Formats;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Arrays;
