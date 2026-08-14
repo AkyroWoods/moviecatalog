@@ -25,11 +25,7 @@ public class ControllerServlet extends HttpServlet {
     private JsonToMovie movieConverter;
 
     public void init() {
-        String jdbcUrl = getServletContext().getInitParameter("jdbcUrl");
-        String jdbcUsername = getServletContext().getInitParameter("jdbcUsername");
-        String jdbcPassword = getServletContext().getInitParameter("jdbcPassword");
-        movieDao = new MovieDao(jdbcUrl, jdbcUsername, jdbcPassword);
-
+         this.movieDao = new MovieDao();
         api = new MovieApiClient();
         movieConverter = new JsonToMovie();
     }
@@ -88,7 +84,6 @@ public class ControllerServlet extends HttpServlet {
         request.setAttribute("title", title);
         request.getRequestDispatcher("MultipleMovieResults.jsp").forward(request, response);
     }
-
 
     private void listAllMovies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         List<Movie> movieCollection = movieDao.listAllMovies();

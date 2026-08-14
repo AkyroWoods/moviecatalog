@@ -1,26 +1,25 @@
 package akyrowoods.moviecatalog;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MovieDao {
-    private final String jdbcUrl;
-    private final String username;
-    private final String password;
     private Connection jdbcConnection;
 
-    public MovieDao(String jdbcUrl, String username, String password) {
-        this.jdbcUrl = jdbcUrl;
-        this.username = username;
-        this.password = password;
-    }
+    public void MovieDao() {
 
+    }
     public void connect() {
         try {
-            Class.forName("org.postgresql.Driver");
-            this.jdbcConnection = DriverManager.getConnection(jdbcUrl, username, password);
-        } catch (SQLException | ClassNotFoundException e) {
+            Context initCtx = new InitialContext();
+            DataSource ds = (DataSource) initCtx.lookup("java:comp/env/jdbc/dvds");
+             this.jdbcConnection = ds.getConnection();
+        } catch (SQLException | NamingException e) {
             throw new RuntimeException("Failed to connect to database", e);
         }
     }
