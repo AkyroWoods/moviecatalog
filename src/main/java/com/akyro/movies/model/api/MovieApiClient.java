@@ -2,6 +2,8 @@ package com.akyro.movies.model.api;
 
 import com.akyro.movies.model.util.JsonToMovie;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -16,11 +18,20 @@ public class MovieApiClient {
         this.formatter = new JsonToMovie();
     }
 
+    public static String getOmdbApiKey() {
+        try {
+            return (String) new InitialContext().lookup("java:comp/env/omdbApiKey");
+        } catch (NamingException e) {
+            throw new RuntimeException("Missing JNDI API key: omdbApiKey", e);
+        }
+    }
+
     public String fetchMovie(String title) {
+        String apiKey = getOmdbApiKey();
         String sanitizedTitle = formatter.sanitizeMovieTitle(title);
         String apiResponse = "";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://www.omdbapi.com/?apikey=3c4dc7f5" + "&t=" + sanitizedTitle + "&plot=full"))
+                .uri(URI.create("http://www.omdbapi.com/?apikey=" + apiKey + "&t=" + sanitizedTitle + "&plot=full"))
                 .GET().build();
 
         try {
@@ -33,10 +44,11 @@ public class MovieApiClient {
     }
 
     public String fetchMovie(String title, int releaseYear) {
+        String apiKey = getOmdbApiKey();
         String sanitizedTitle = formatter.sanitizeMovieTitle(title);
         String apiResponse = "";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://www.omdbapi.com/?apikey=3c4dc7f5" + "&t=" + sanitizedTitle + "&y=" + releaseYear + "&plot=full"))
+                .uri(URI.create("http://www.omdbapi.com/?apikey=" + apiKey + "&t=" + sanitizedTitle + "&y=" + releaseYear + "&plot=full"))
                 .GET().build();
 
         try {
@@ -44,10 +56,7 @@ public class MovieApiClient {
             apiResponse = response.body().replace("min", "");
         } catch (Exception e) {
             throw new RuntimeException("Api Request Failed: ", e);
-
         }
         return apiResponse;
     }
-
-
 }

@@ -53,7 +53,7 @@ public class ControllerServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errormessage", e);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("Error.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/view/Error.jsp");
             dispatcher.forward(request, response);
         }
     }
@@ -79,24 +79,24 @@ public class ControllerServlet extends HttpServlet {
         if (matches.size() == 1) {
             Movie movie = matches.get(0);
             request.setAttribute("movie", movie);
-            request.getRequestDispatcher("Search.jsp").forward(request,response);
+            request.getRequestDispatcher("/view/Search.jsp").forward(request,response);
             return;
         }
 
         request.setAttribute("matches", matches);
         request.setAttribute("title", title);
-        request.getRequestDispatcher("MultipleMovieResults.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/MultipleMovieResults.jsp").forward(request, response);
     }
 
     private void listAllMovies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         List<Movie> movieCollection = movieDao.listAllMovies();
         request.setAttribute("movies", movieCollection);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("Collection.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/view/Collection.jsp");
         dispatcher.forward(request, response);
     }
 
     private void showNewForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher("AddMovie.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/view/AddMovie.jsp");
         dispatcher.forward(request, response);
     }
 
@@ -110,7 +110,7 @@ public class ControllerServlet extends HttpServlet {
         request.setAttribute("movie", movie);
         request.setAttribute("allGenres", allGenres);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("EditMovie.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/view/EditMovie.jsp");
         dispatcher.forward(request, response);
     }
 
@@ -138,7 +138,7 @@ public class ControllerServlet extends HttpServlet {
         int movieId = Integer.parseInt(request.getParameter("movieId"));
         Movie movie = movieDao.getMovieById(movieId);
         request.setAttribute("movie", movie);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("Details.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/view/Details.jsp");
         dispatcher.forward(request, response);
     }
 
