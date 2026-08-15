@@ -6,6 +6,16 @@ Throughout this project  I learned how Servlets work, how to structure a Java we
 
 I can search for a movie via the OMDb API, view its details, and save it to my personal catalog, backed by PostgreSQL, so I know what I already have before buying it again.
 
+## Screenshots
+
+| Add Movie | Edit Movie |
+|---|---|
+| ![Add movie](docs/screenshots/add-movie.png) | ![Edit movie](docs/screenshots/edit-movie.png) |
+
+| Collection View | Movie Details  |
+|---|---|
+| ![Collection view](docs/screenshots/collection.png) | ![Movie details](docs/screenshots/movie-details.png) |
+
 ## Features
 
 - Search — query the [OMDb API](https://www.omdbapi.com/) by title, or by title and release year for more precise results
