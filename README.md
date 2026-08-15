@@ -8,13 +8,13 @@ I can search for a movie via the OMDb API, view its details, and save it to my p
 
 ## Screenshots
 
-| Add Movie | Edit Movie |
-|---|---|
-| ![Add movie](docs/screenshots/add-movie.png) | ![Edit movie](docs/screenshots/edit-movie.png) |
-
 | Collection View | Movie Details  |
 |---|---|
 | ![Collection view](docs/screenshots/collection.png) | ![Movie details](docs/screenshots/movie-details.png) |
+
+| Add Movie | Edit Movie |
+|---|---|
+| ![Add movie](docs/screenshots/add-movie.png) | ![Edit movie](docs/screenshots/edit-movie.png) |
 
 ## Features
 
